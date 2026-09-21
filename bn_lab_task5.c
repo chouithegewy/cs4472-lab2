@@ -19,9 +19,9 @@ int main() {
     char *e_hex = "010001"; //  (this hex value equals to decimal 65537)
     //char *s_hex = "643D6F34902D9C7EC90CB0B2BCA36C47FA37165C0005CAB026C0542CBDB6802F";
     char *s_hex = "643D6F34902D9C7EC90CB0B2BCA36C47FA37165C0005CAB026C0542CBDB6803F"; // corrupted
-    //char *M_str = "Launch a missle";
-    // python3 -c 'print("Launch a missle.".encode("utf-8").hex())'
-    char *M_hex = "4c61756e63682061206d6973736c652e";
+    //char *M_str = "Launch a missile.";
+    // python3 -c 'print("Launch a missile.".encode("utf-8").hex())'
+    char *M_hex = "4c61756e63682061206d697373696c652e";
 
     BIGNUM *M = BN_new();
     BIGNUM *n = BN_new();
@@ -34,16 +34,25 @@ int main() {
     BN_hex2bn(&M, M_hex);
     BN_hex2bn(&S, s_hex);
 
-    // veryifying that the signed message S is indeed encrypted by Alice's private key d
+    // verifying that the signed message S is indeed encrypted by Alice's private key d
     // that is, that she is the author of the message
     BN_mod_exp(v, S, e, n, ctx);
 
     printBNStr("v (hex):", v);
+    printBNStr("M (hex):", M);
+
+    // S is Alice's signature on M only if the recovered value is M itself
+    if (BN_cmp(v, M) == 0) {
+        printf("signature verified\n");
+    } else {
+        printf("signature INVALID\n");
+    }
 
     BN_free(M);
     BN_free(n);
     BN_free(e);
     BN_free(S);
+    BN_free(v);
     BN_CTX_free(ctx);
 
     return 0;

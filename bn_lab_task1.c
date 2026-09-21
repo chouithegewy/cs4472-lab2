@@ -75,7 +75,8 @@ int main() {
     //  d = e inverse mod totient n
     //  aka e * d congruent 1 mod totient n
     BIGNUM *res = BN_new();
-    if (BN_gcd(res, e, d, ctx) == 1) {
+    BN_mod_mul(res, e, d, totient_n, ctx);
+    if (BN_is_one(res)) {
         // printBN("private key d:", d);
         // printBN("public key e:", e);
         // printBN("totient n (p - 1)(q - 1):", totient_n);
